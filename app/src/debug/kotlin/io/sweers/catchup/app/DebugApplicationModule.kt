@@ -135,11 +135,14 @@ object DebugApplicationModule {
   @IntoSet
   @Provides
   @SuppressLint("NewApi") // False positive
-  fun strictModeInit(@StrictModeExecutor penaltyListenerExecutor: dagger.Lazy<ExecutorService>): () -> Unit = {
+  fun strictModeInit(
+    @StrictModeExecutor penaltyListenerExecutor: dagger.Lazy<ExecutorService>,
+    appConfig: AppConfig
+  ): () -> Unit = {
     StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
         .detectAll()
         .apply {
-          sdk(28) {
+          appConfig.sdk(28) {
             penaltyListener(penaltyListenerExecutor.get(), StrictMode.OnThreadViolationListener {
               Timber.w(it)
             }) ?: run {
@@ -152,7 +155,7 @@ object DebugApplicationModule {
         .detectAll()
         .penaltyLog()
         .apply {
-          sdk(28) {
+          appConfig.sdk(28) {
             penaltyListener(penaltyListenerExecutor.get(), StrictMode.OnVmViolationListener {
               when (it) {
                 is UntaggedSocketViolation -> {
