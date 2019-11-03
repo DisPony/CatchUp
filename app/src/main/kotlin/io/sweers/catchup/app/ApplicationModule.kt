@@ -39,6 +39,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoSet
 import dagger.multibindings.Multibinds
+import dev.zacsweers.catchup.appconfig.AppConfig
+import dev.zacsweers.catchup.appconfig.AppConfigMetadataContributor
 import io.noties.markwon.Markwon
 import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
 import io.noties.markwon.ext.tables.TablePlugin
@@ -81,6 +83,12 @@ abstract class ApplicationModule {
   annotation class LazyDelegate
 
   /**
+   * Provides AppConfig metadata contributors.
+   */
+  @Multibinds
+  abstract fun metadataContributors(): Set<AppConfigMetadataContributor>
+
+  /**
    * Provides initializers for app startup.
    */
   @Initializers
@@ -105,6 +113,10 @@ abstract class ApplicationModule {
   @Binds
   @Singleton
   abstract fun provideUiPreferences(catchupPreferences: CatchUpPreferences): UiPreferences
+
+  @Binds
+  @Singleton
+  abstract fun bindAppConfig(catchUpAppConfig: CatchUpAppConfig): AppConfig
 
   @Module
   companion object {
